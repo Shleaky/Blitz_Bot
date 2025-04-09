@@ -1,0 +1,8 @@
+```gitignore
+__pycache__/
+.vscode/
+*.pyc
+*.png
+tiles/
+*.DS_Store
+.env

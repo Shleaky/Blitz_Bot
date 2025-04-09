@@ -39,7 +39,7 @@ def main():
     words = sorted(words, key=lambda x: -x[2])
     
     print("Playing Words...")
-    play_words(words, max_words=80)
+    play_words(words, max_words=60)
     print("Board Complete!")
 
 if __name__ == "__main__":

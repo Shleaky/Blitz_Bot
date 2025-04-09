@@ -6,8 +6,8 @@ MONITOR_INDEX = 2 # Adjust this to your monitor setup
 
 
 # Grid parameters - adjust after first capture to fine-tune
-GRID_X = 555         # X offset from top-left of monitor
-GRID_Y = 415          # Y offset from top
+GRID_X = 590        # X offset from top-left of monitor
+GRID_Y = 390         # Y offset from top
 GRID_WIDTH = 440      # Width of grid area
 GRID_HEIGHT = 440     # Height of grid area
 GRID_SIZE = 4         # 4x4 Word Blitz grid
@@ -17,6 +17,6 @@ GRID_SIZE = 4         # 4x4 Word Blitz grid
 # Tile layout
 TILE_SIZE = 100
 TILE_GAP = 13
-TILE_FOLDER = "tiles"
+
 # Output tile folder
 TILE_FOLDER = "tiles"

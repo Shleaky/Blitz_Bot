@@ -90,7 +90,7 @@ def find_words(board: Board, trie: Trie) -> List[Tuple[str, List[Position], int]
         path.append((r, c))
         word += char
 
-        if node.is_word and len(word) >= 3:
+        if node.is_word and len(word) >= 2:
             score = score_word(word.upper())
             found.append((word.upper(), path.copy(), score))
 

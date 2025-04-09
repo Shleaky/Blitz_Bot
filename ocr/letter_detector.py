@@ -44,7 +44,7 @@ def extract_letter(tile: np.ndarray) -> str:
     processed = preprocess_tile(tile)
 
     # No whitelist; allows us to see what Tesseract really returns
-    config = "--psm 10"
+    config = "--psm 10 Whitelist: 1|ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     result = pytesseract.image_to_string(processed, config=config)
     raw = result.strip()
 
