@@ -1,0 +1,7 @@
+pytesseract
+opencv-python
+numpy
+pillow
+imagehash
+pyautogui
+mss
