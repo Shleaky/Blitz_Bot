@@ -28,5 +28,9 @@ SCORE_WIDTH = 80
 SCORE_HEIGHT = 30
 
 # Optional
-DEBUG_MODE = True  # Set to True to enable debug overlay
+DEBUG_MODE = False  # Set to True to enable debug overlay
 # Set to False to disable debug overlay
+
+# Game is running on monitor 2, so draw overlay on monitor 1
+GAME_MONITOR_INDEX = 2
+DEBUG_MONITOR_INDEX = 1

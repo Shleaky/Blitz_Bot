@@ -7,9 +7,12 @@ from automation.input_simulator import play_words
 from utils.wordlist_manager import prune_rejected_words
 from utils.debug_overlay import draw_debug_overlay 
 from config.settings import DEBUG_MODE
+from automation.input_simulator import exit_completely
+from utils.wordlist_manager import prune_rejected_words
 
 def main():
-    
+    input("🛑 Press [Enter] to start cheating...")
+
     print("🎯 Capturing grid...")
     grid_image = capture_grid()
 
@@ -42,12 +45,18 @@ def main():
     
     #playing words
     print("🖱️ Playing words...")
-    play_words(words, max_words=70)
+    play_words(words, max_words=60)
     print("Board Complete!")
+    
+    # ... after playing words
+    if not exit_completely:
+        prune_rejected_words()
+    else:
+        print("💡 Skipping word pruning due to exit signal.")
     
     # After the round finishes, clean up rejected words
     #print("🧹 Pruning rejected words...")
-    prune_rejected_words()
+    #prune_rejected_words()
     
 
 if __name__ == "__main__":
