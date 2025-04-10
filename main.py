@@ -20,26 +20,24 @@ def main():
     for row in board:
         print(" ".join(row))
         
-    #board = extract_letters(tiles)
-
     # Print recognized board
-    #for row in board:
-     #   print(" ".join(row))
-
+    
     # Load word list and find valid words
     trie = load_dictionary("assets/words.txt")
     words = find_words(board, trie)
-
+    possiblescore = 0
     print(f"✅ Found {len(words)} valid words:")
     for word, path, score in sorted(words, key=lambda x: (-score_word(x[0]), x[0])):
-        print(f"{word:<10} Score: {score:<4} Path: {path}")
+        possiblescore += score
+        
+    print(f"Potential Score: {possiblescore} points")
 
     # Sort by score
-    
     words = sorted(words, key=lambda x: -x[2])
     
-    print("Playing Words...")
-    play_words(words, max_words=60)
+    #playing words
+    print("🖱️ Playing words...")
+    play_words(words, max_words=70)
     print("Board Complete!")
 
 if __name__ == "__main__":
