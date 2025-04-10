@@ -53,8 +53,10 @@ def extract_letter(tile: np.ndarray) -> str:
 
     if raw_upper in ['1', '|']:
         return 'I'
-    if raw_upper in ['©']:  # Common Tesseract misread for 'C'
-        return 'C'
+    if raw_upper in ['©', '(', '{', 'c', 'C']:  # Common Tesseract misread for 'C'
+        return 'C' 
+    if letter == "-":
+        print(f"[OCR] Unrecognized tile raw output: '{raw}'")
 
     # Final filter: accept A-Z only, exactly one char
     letter = ''.join(filter(str.isalpha, raw_upper))

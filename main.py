@@ -4,6 +4,9 @@ from utils.screen_capture import capture_grid, extract_tiles
 from ocr.letter_detector import extract_letters
 from solver.solver import load_dictionary, find_words, score_word
 from automation.input_simulator import play_words
+from utils.wordlist_manager import prune_rejected_words
+from utils.debug_overlay import draw_debug_overlay 
+from config.settings import DEBUG_MODE
 
 def main():
     
@@ -20,7 +23,9 @@ def main():
     for row in board:
         print(" ".join(row))
         
-    # Print recognized board
+    if DEBUG_MODE:
+        draw_debug_overlay()
+
     
     # Load word list and find valid words
     trie = load_dictionary("assets/words.txt")
@@ -39,6 +44,11 @@ def main():
     print("🖱️ Playing words...")
     play_words(words, max_words=70)
     print("Board Complete!")
+    
+    # After the round finishes, clean up rejected words
+    #print("🧹 Pruning rejected words...")
+    prune_rejected_words()
+    
 
 if __name__ == "__main__":
     main()

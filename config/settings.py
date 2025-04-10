@@ -20,3 +20,13 @@ TILE_GAP = 12
 
 # Output tile folder
 TILE_FOLDER = "tiles"
+
+# Adjust based on screen capture
+SCORE_X = 645      
+SCORE_Y = 285
+SCORE_WIDTH = 80
+SCORE_HEIGHT = 30
+
+# Optional
+DEBUG_MODE = True  # Set to True to enable debug overlay
+# Set to False to disable debug overlay

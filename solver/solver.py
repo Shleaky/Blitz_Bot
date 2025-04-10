@@ -5,6 +5,7 @@ from solver.trie import Trie
 Board = List[List[str]]
 Position = Tuple[int, int]
 
+
 DIRECTIONS = [  # 8 directions (including diagonals)
     (-1, -1), (-1, 0), (-1, 1),
     ( 0, -1),          ( 0, 1),
@@ -54,8 +55,12 @@ def find_words(board: Board, trie: Trie) -> List[Tuple[str, List[Position]]]:
 
 def score_word(word: str) -> int:
     """
-    Scores a word based on Word Blitz rules.
-    Assumes word is uppercase.
+    Mock scoring function for Word Blitz.
+    This function assigns scores based on word length.
+    Correct system scores based on the tiles value + word length.
+    Further bonus points are awarded in the same fashion as scrabble.
+    Some tiles may offer multiplicative word or letter scores. 
+    This means that multiple paths to spell the same word may yield different scores.
     """
     length = len(word)
     if length < 3:
