@@ -5,6 +5,7 @@ import keyboard
 from typing import List, Tuple
 from config import settings
 from utils.rejection_monitor import capture_score, word_was_accepted
+from utils.wordlist_manager import mark_rejected_word
 
 Position = Tuple[int, int]
 
@@ -32,10 +33,10 @@ def listen_for_keys():
             break
         time.sleep(0.1)
 
-def tile_to_screen_coords(row: int, col: int) -> Tuple[int, int]:
-    x = settings.GRID_X + col * (settings.TILE_SIZE + settings.TILE_GAP) + settings.TILE_SIZE // 2
-    y = settings.GRID_Y + row * (settings.TILE_SIZE + settings.TILE_GAP) + settings.TILE_SIZE // 2
-    return x, y
+def tile_to_screen_coords(x: int, y: int) -> Tuple[int, int]:
+    screen_x = settings.GRID_X + x * (settings.TILE_SIZE + settings.TILE_GAP) + settings.TILE_SIZE // 2
+    screen_y = settings.GRID_Y + y * (settings.TILE_SIZE + settings.TILE_GAP) + settings.TILE_SIZE // 2
+    return screen_x, screen_y
 
 def play_word(path: List[Position], delay: float = 0.02):
     if not path:
@@ -45,9 +46,9 @@ def play_word(path: List[Position], delay: float = 0.02):
     pyautogui.moveTo(start_x, start_y)
     pyautogui.mouseDown()
 
-    for row, col in path[1:]:
-        x, y = tile_to_screen_coords(row, col)
-        pyautogui.moveTo(x, y, duration=delay)
+    for x, y in path[1:]:
+        screen_x, screen_y = tile_to_screen_coords(x, y)
+        pyautogui.moveTo(screen_x, screen_y, duration=delay)
 
     pyautogui.mouseUp()
 
@@ -78,8 +79,7 @@ def play_words(words: List[Tuple[str, List[Position], int]], max_words: int = 10
 
         if not word_was_accepted(prev_score):
             print(f"❌ Rejected: {word}")
-            with open("assets/rejected_words.txt", "a") as f:
-                f.write(word + "\n")
+            mark_rejected_word(word)
         else:
             print(f"✅ Accepted: {word}")
 

@@ -1,118 +1,96 @@
+from utils.file_loader import load_word_list
 
-from typing import List, Set, Tuple
-from solver.trie import Trie
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end_of_word = False
 
-Board = List[List[str]]
-Position = Tuple[int, int]
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
 
+    def insert(self, word: str):
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                node.children[char] = TrieNode()
+            node = node.children[char]
+        node.is_end_of_word = True
 
-DIRECTIONS = [  # 8 directions (including diagonals)
-    (-1, -1), (-1, 0), (-1, 1),
-    ( 0, -1),          ( 0, 1),
-    ( 1, -1), ( 1, 0), ( 1, 1)
-]
+    def contains(self, word: str) -> bool:
+        node = self.root
+        for char in word:
+            if char not in node.children:
+                return False
+            node = node.children[char]
+        return node.is_end_of_word
 
-def load_dictionary(path: str) -> Trie:
+    def starts_with(self, prefix: str) -> bool:
+        node = self.root
+        for char in prefix:
+            if char not in node.children:
+                return False
+            node = node.children[char]
+        return True
+
+def build_trie(word_list: list) -> Trie:
     trie = Trie()
-    with open(path, 'r') as f:
-        for word in f:
-            word = word.strip()
-            if len(word) >= 3:  # Word Blitz ignores short words
-                trie.insert(word)
+    for word in word_list:
+        trie.insert(word)
     return trie
 
-def find_words(board: Board, trie: Trie) -> List[Tuple[str, List[Position]]]:
-    found = []
-    visited = [[False] * 4 for _ in range(4)]
-
-    def dfs(r: int, c: int, node: Trie, path: List[Position], word: str):
-        if not (0 <= r < 4 and 0 <= c < 4) or visited[r][c]:
-            return
-
-        char = board[r][c].lower()
-        if char not in node.children:
-            return
-
-        visited[r][c] = True
-        node = node.children[char]
-        path.append((r, c))
-        word += char
-
-        if node.is_word:
-            found.append((word.upper(), path.copy()))
-
-        for dr, dc in DIRECTIONS:
-            dfs(r + dr, c + dc, node, path, word)
-
-        visited[r][c] = False
-        path.pop()
-
-    for row in range(4):
-        for col in range(4):
-            dfs(row, col, trie.root, [], "")
-
-    return found
+def load_dictionary() -> Trie:
+    word_list = load_word_list()
+    return build_trie(word_list)
 
 def score_word(word: str) -> int:
-    """
-    Mock scoring function for Word Blitz.
-    This function assigns scores based on word length.
-    Correct system scores based on the tiles value + word length.
-    Further bonus points are awarded in the same fashion as scrabble.
-    Some tiles may offer multiplicative word or letter scores. 
-    This means that multiple paths to spell the same word may yield different scores.
-    """
-    length = len(word)
-    if length < 3:
-        return 0
-    elif length == 3:
-        return 100
-    elif length == 4:
-        return 200
-    elif length == 5:
-        return 300
-    elif length == 6:
-        return 400
-    elif length == 7:
-        return 500
-    else:
-        return 600 + (length - 8) * 100
+    # Basic word scoring: letter value + length
+    # Modify if needed for bonus tiles later
+    letter_scores = {
+        'A': 1, 'B': 3, 'C': 3, 'D': 2, 'E': 1,
+        'F': 4, 'G': 2, 'H': 4, 'I': 1, 'J': 8,
+        'K': 5, 'L': 1, 'M': 3, 'N': 1, 'O': 1,
+        'P': 3, 'Q': 10, 'R': 1, 'S': 1, 'T': 1,
+        'U': 1, 'V': 4, 'W': 4, 'X': 8, 'Y': 4, 'Z': 10
+    }
+    return sum(letter_scores.get(c.upper(), 0) for c in word) + len(word)
 
-def find_words(board: Board, trie: Trie) -> List[Tuple[str, List[Position], int]]:
+def find_words(board: list, trie: Trie) -> list:
     found = []
     visited = [[False] * 4 for _ in range(4)]
 
-    def dfs(r: int, c: int, node: Trie, path: List[Position], word: str):
-        if not (0 <= r < 4 and 0 <= c < 4) or visited[r][c]:
+    def dfs(x, y, path, word):
+        if x < 0 or y < 0 or x >= 4 or y >= 4:
+            return
+        if visited[y][x]:
             return
 
-        char = board[r][c].lower()
-        if char not in node.children:
+        letter = board[y][x]
+        if letter == "-":
             return
 
-        visited[r][c] = True
-        node = node.children[char]
-        path.append((r, c))
-        word += char
+        word += letter
+        path.append((x, y))
 
-        if node.is_word and len(word) >= 2:
-            score = score_word(word.upper())
-            found.append((word.upper(), path.copy(), score))
+        if not trie.starts_with(word):
+            path.pop()
+            return
 
-        for dr, dc in DIRECTIONS:
-            dfs(r + dr, c + dc, node, path, word)
+        if trie.contains(word):
+            found.append((word, path.copy(), score_word(word)))
 
-        visited[r][c] = False
+        visited[y][x] = True
+
+        for dx in [-1, 0, 1]:
+            for dy in [-1, 0, 1]:
+                if dx != 0 or dy != 0:
+                    dfs(x + dx, y + dy, path, word)
+
+        visited[y][x] = False
         path.pop()
 
-    for row in range(4):
-        for col in range(4):
-            dfs(row, col, trie.root, [], "")
+    for y in range(4):
+        for x in range(4):
+            dfs(x, y, [], "")
 
-    # Deduplicate by word, keeping highest score instance
-    deduped = {}
-    for word, path, score in found:
-        if word not in deduped or score > deduped[word][1]:
-            deduped[word] = (path, score)
-
-    return [(word, path, score) for word, (path, score) in deduped.items()]
+    return found

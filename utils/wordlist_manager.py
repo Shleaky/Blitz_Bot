@@ -1,26 +1,21 @@
-import os
+from utils.file_loader import load_rejected_words, save_rejected_word
 
-def prune_rejected_words(wordlist_path="assets/words.txt", rejected_path="assets/rejected_words.txt"):
+# This list should be populated during runtime by tracking which words failed to score
+FAILED_WORDS_THIS_ROUND = []
+
+def mark_rejected_word(word: str):
     """
-    Removes all rejected words from the word list and clears the rejected log.
+    Add a word to the current round's rejected list.
     """
-    if not os.path.exists(rejected_path) or os.path.getsize(rejected_path) == 0:
-        print("ℹ️ No rejected words to prune.")
-        return
+    word = word.upper()
+    if word not in FAILED_WORDS_THIS_ROUND:
+        FAILED_WORDS_THIS_ROUND.append(word)
 
-    with open(wordlist_path, 'r') as f:
-        words = set(w.strip().lower() for w in f if w.strip())
-
-    with open(rejected_path, 'r') as f:
-        rejected = set(w.strip().lower() for w in f if w.strip())
-
-    cleaned = sorted(words - rejected)
-
-    with open(wordlist_path, 'w') as f:
-        for word in cleaned:
-            f.write(word + "\n")
-
-    open(rejected_path, 'w').close()  # Clear file after pruning
-
-    print(f"🧹 Pruned {len(rejected)} rejected words from word list.")
-    print(f"📄 Updated word list now contains {len(cleaned)} words.")
+def prune_rejected_words():
+    """
+    Save all rejected words from the round into the persistent rejected words file.
+    """
+    for word in FAILED_WORDS_THIS_ROUND:
+        save_rejected_word(word)
+    print(f"🧹 Pruned {len(FAILED_WORDS_THIS_ROUND)} rejected words to file.")
+    FAILED_WORDS_THIS_ROUND.clear()

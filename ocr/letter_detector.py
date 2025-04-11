@@ -5,13 +5,22 @@ from typing import List
 from config import settings
 from PIL import Image
 import imagehash
+import os
+import sys
 
+# Tell pytesseract where to find the OCR engine
+if settings.TESSERACT_PATH:
+    pytesseract.pytesseract.tesseract_cmd = settings.TESSERACT_PATH
 
-# If Tesseract is not in system PATH, set the path manually here:
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+def get_asset_path(relative_path: str) -> str:
+    """
+    Get the absolute path to a resource, whether running from source or PyInstaller .exe.
+    """
+    base_path = getattr(sys, '_MEIPASS', os.path.abspath("."))
+    return os.path.join(base_path, relative_path)
 
-# Known good I tile hash — we'll extract this from your real tile
-KNOWN_I_HASH = imagehash.average_hash(Image.open("tiles/tile_I_reference.png"))
+# Known good I tile hash — load from portable-safe location
+KNOWN_I_HASH = imagehash.average_hash(Image.open(get_asset_path("tiles/tile_I_reference.png")))
 
 def preprocess_tile(tile: np.ndarray) -> np.ndarray:
     """
@@ -35,8 +44,6 @@ def is_known_I_tile(tile: np.ndarray) -> bool:
     return tile_hash - KNOWN_I_HASH <= 4  # small hash difference = visual match
 
 def extract_letter(tile: np.ndarray) -> str:
-    
-    
     """
     Extracts a single character from a tile using Tesseract OCR.
     Reclassifies ambiguous glyphs and filters intelligently.
@@ -62,11 +69,13 @@ def extract_letter(tile: np.ndarray) -> str:
     letter = ''.join(filter(str.isalpha, raw_upper))
     return letter if len(letter) == 1 else "-"
 
-
-
 def extract_letters(tiles: List[np.ndarray]) -> List[List[str]]:
+    """
+    Converts 16 tile images into a 4x4 list of recognized letters.
+    """
     if len(tiles) != settings.GRID_SIZE ** 2:
         raise ValueError("Expected 16 tiles for a 4x4 board.")
+
     letters = []
     for row in range(settings.GRID_SIZE):
         row_letters = []

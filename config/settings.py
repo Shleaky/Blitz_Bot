@@ -1,5 +1,23 @@
 # config/settings.py
 
+""" import sys
+import os
+if getattr(sys, 'frozen', False):
+    TESSERACT_PATH = os.path.join(sys._MEIPASS, "tesseract", "tesseract.exe")
+else:
+    TESSERACT_PATH = r"C:\Program Files\Tesseract-OCR\tesseract.exe" """
+
+import os
+import sys
+import shutil
+
+# Prefer system Tesseract if available
+TESSERACT_PATH = shutil.which("tesseract")
+
+# Fallback to bundled Tesseract if running as a .exe
+if getattr(sys, 'frozen', False) and not TESSERACT_PATH:
+    TESSERACT_PATH = os.path.join(sys._MEIPASS, "tesseract", "tesseract.exe")
+
 # Monitor index where the game is running (1 = primary, 2 = second monitor, etc.)
 MONITOR_INDEX = 2 # Adjust this to your monitor setup
 # Set to 0 to capture the primary monitor

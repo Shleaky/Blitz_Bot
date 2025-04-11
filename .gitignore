@@ -1,8 +1,40 @@
-```gitignore
+# Byte-compiled / Python cache
 __pycache__/
-.vscode/
+*.py[cod]
+*.pyo
+*.pyd
 *.pyc
-*.png
-tiles/
-*.DS_Store
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Editor settings
+.vscode/
+.idea/
+
+# OS cruft
+.DS_Store
+Thumbs.db
+
+# Build output
+build/
+dist/
+*.spec
+
+# Installer output
+dist-installer/
+*.exe
+
+# Logs and debug output
+*.log
+*.tmp
+
+# Personal config
+.settings.json
 .env
+
+# Word list state (optional, if user-generated)
+*.bak
+*.swp
